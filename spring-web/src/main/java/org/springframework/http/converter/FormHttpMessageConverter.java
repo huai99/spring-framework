@@ -117,11 +117,8 @@ public class FormHttpMessageConverter implements HttpMessageConverter<MultiValue
 		this.supportedMediaTypes.add(MediaType.APPLICATION_FORM_URLENCODED);
 		this.supportedMediaTypes.add(MediaType.MULTIPART_FORM_DATA);
 
-		StringHttpMessageConverter stringHttpMessageConverter = new StringHttpMessageConverter();
-		stringHttpMessageConverter.setWriteAcceptCharset(false);  // see SPR-7316
-
 		this.partConverters.add(new ByteArrayHttpMessageConverter());
-		this.partConverters.add(stringHttpMessageConverter);
+		this.partConverters.add(new StringHttpMessageConverter());
 		this.partConverters.add(new ResourceHttpMessageConverter());
 
 		applyDefaultCharset();
@@ -270,11 +267,11 @@ public class FormHttpMessageConverter implements HttpMessageConverter<MultiValue
 	public void write(MultiValueMap<String, ?> map, @Nullable MediaType contentType, HttpOutputMessage outputMessage)
 			throws IOException, HttpMessageNotWritableException {
 
-		if (!isMultipart(map, contentType)) {
-			writeForm((MultiValueMap<String, Object>) map, contentType, outputMessage);
+		if (isMultipart(map, contentType)) {
+			writeMultipart((MultiValueMap<String, Object>) map, outputMessage);
 		}
 		else {
-			writeMultipart((MultiValueMap<String, Object>) map, outputMessage);
+			writeForm((MultiValueMap<String, Object>) map, contentType, outputMessage);
 		}
 	}
 
@@ -283,8 +280,8 @@ public class FormHttpMessageConverter implements HttpMessageConverter<MultiValue
 		if (contentType != null) {
 			return MediaType.MULTIPART_FORM_DATA.includes(contentType);
 		}
-		for (String name : map.keySet()) {
-			for (Object value : map.get(name)) {
+		for (List<?> values : map.values()) {
+			for (Object value : values) {
 				if (value != null && !(value instanceof String)) {
 					return true;
 				}

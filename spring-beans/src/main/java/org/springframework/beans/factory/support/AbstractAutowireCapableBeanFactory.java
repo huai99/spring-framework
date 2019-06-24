@@ -233,6 +233,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * between your beans. Refactor your application logic to have the two beans
 	 * involved delegate to a third bean that encapsulates their common logic.
 	 */
+	// Places where spring deal with circular dependencies
 	public void setAllowCircularReferences(boolean allowCircularReferences) {
 		this.allowCircularReferences = allowCircularReferences;
 	}

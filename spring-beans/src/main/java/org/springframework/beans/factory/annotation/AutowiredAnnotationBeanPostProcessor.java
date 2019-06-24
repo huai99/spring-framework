@@ -456,6 +456,7 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 
 			ReflectionUtils.doWithLocalFields(targetClass, field -> {
 				MergedAnnotation<?> ann = findAutowiredAnnotation(field);
+				// The place where they find out the annotation of the field
 				if (ann != null) {
 					if (Modifier.isStatic(field.getModifiers())) {
 						if (logger.isInfoEnabled()) {
